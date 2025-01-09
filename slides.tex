@@ -1,0 +1,76 @@
+\documentclass{beamer}
+
+\usepackage{ulem}
+
+% Information to be included in the title page:
+\title{Embedding Lambda Calculus into Haskell with Safety Features}
+\author{Seungheon Oh, Tomasz Maciosowski}
+\institute{MLabs}
+\date{Jan 2025}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+  \frametitle{Background}
+  Distributed computing system that executes modified version of $\lambda$-calculus is provided for our research domain specific language (DSL) to target. \\~\\
+
+  $\lambda$-caluclus allows
+  \begin{enumerate}
+  \item
+    Simple reduction laws that allows high reproducibility
+    % Ease of evaluation on each node of distributed computing
+  \item
+    Easy to encoding and expansion feature sets
+  \item
+    \sout{Easy}Easier to target as compilation result
+  \end{enumerate}
+
+  %
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Example: Pseudo code}
+  (($\lambda .$(($\lambda .$(($\lambda .$(2($\lambda .$((2 2) 1))))($\lambda .$(2($\lambda .$((2 2) 1))))))
+  ($\lambda .$($\lambda .$(force(((3(force((($\lambda .$($\lambda .$(((5 2) 1)(delay(con bool False)))))((equals 1)(integer 1)))(delay((equals 1)(integer 2))))))(delay(integer 1)))(delay(((builtin addInteger)(2(1 - (integer 1))))(2(1 - (integer 2))))))))))) ifThenElse))
+\end{frame}
+
+\begin{frame}
+  \frametitle{Embedding into Haskell}
+  \begin{enumerate}
+  \item
+    Each ``terms'' should have explicit types
+  \item
+    Terms with and without unbound variables needs to be distinguished at the type level
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Embedding into Haskell - unbound variables}
+
+\begin{verbatim}
+
+\begin{frame}
+  \frametitle{Embedding into Haskell - unbound variables}
+
+\begin{verbatim}
+
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Considerations for the VM}
+  \begin{enumerate}
+  \item
+    Evaluation is eager(Call by value)
+  \item
+    C
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Optimizations}
+\end{frame}
+
+\end{document}
