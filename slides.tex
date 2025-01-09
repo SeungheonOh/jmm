@@ -71,6 +71,70 @@
 
 \begin{frame}
   \frametitle{Optimizations}
+  \begin{itemize}
+    \item
+    \item Optimizing for both size and execution units
+    \item Execution VM has strict limits on both
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Optimizing Funciton Application}
+\begin{verbatim}
+papp :: Term s (a :--> b) -> Term s a -> Term s b
+papp x y = Term \i ->
+  (,) <$> asRawTerm x i <*> asRawTerm y i >>= \case
+    -- Applying anything to an error is an error.
+    (getTerm -> RError, _) -> pure $ mkTermRes RError
+    -- Applying an error to anything is an error.
+    (_, getTerm -> RError) -> pure $ mkTermRes RError
+    -- Applying to `id` changes nothing.
+    (getTerm -> RLamAbs 0 (RVar 0), y') -> pure y'
+    (getTerm -> RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), y') -> pure y'
+    -- new RApply
+    (x', y') -> pure $ TermResult (RApply (getTerm x') [getTerm y']) (getDeps x' <> getDeps y')
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\verb|let| Bindings}
+  \begin{itemize}
+  \item UPLC does not have native let bindings
+  \item Can be simulated with
+\begin{verbatim}
+let x = f y in g x x
+
+(\x -> g x x) (f y)
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Optimizing \verb|let| Bindings}
+  \begin{itemize}
+\item Let binding can be eliminated if term is small enough
+    \end{itemize}
+\begin{verbatim}
+plet :: Term s a -> (Term s a -> Term s b) -> Term s b
+plet v f = Term \i ->
+  asRawTerm v i >>= \case
+    (getTerm -> RVar _) -> asRawTerm (f v) i
+    (getTerm -> RBuiltin _) -> asRawTerm (f v) i
+    (getTerm -> RHoisted _) -> asRawTerm (f v) i
+    _ -> asRawTerm (papp (plam' f) v) i
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \framtitle{Hoisting}
+  \begin{itemize}
+    \item By default every term is inlined at every use
+    \item Closed terms can be hoisted - transformed into top-level let-binding
+    \item During plutarch compilation terms are hashed and compared against hoisted terms
+    \item If hoisted term is small enough or used only once it will get inlined anyway
+    \end{itemize}
+\begin{verbatim}
+phoistAcyclic :: ClosedTerm a -> Term s a
+\end{verbatim}
 \end{frame}
 
 \end{document}
