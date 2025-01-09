@@ -1,6 +1,7 @@
 \documentclass{beamer}
 
 \usepackage{ulem}
+\usepackage{minted}
 
 % Information to be included in the title page:
 \title{Embedding Lambda Calculus into Haskell with Safety Features}
@@ -47,16 +48,34 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Embedding into Haskell - unbound variables}
+  \frametitle{Embedding into Haskell - Terms}
 
-\begin{verbatim}
+  De-Brujin indices was used to encode lambda terms. This removed the need to provide unique identifier that binds to each lambda abstractions.
+
+  Using De-Bruijn indices,
+  $$\lambda f. (\lambda x. f (x x)) (\lambda x. f (x x))$$
+  encodes to
+  $$\lambda. (\lambda. 2 (1 1)) (\lambda. 2 (1 1))$$
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Compilation target}
+\begin{minted}{haskell}
+data Term uni
+    = Var !Word64
+    | LamAbs !(Term uni)
+    | Apply !(Term uni) !(Term uni)
+    | Force !(Term uni)
+    | Delay !(Term uni)
+    | Constant !(Some (ValueOf uni))
+    | Builtin !Function
+    | Error
+\end{minted}
+\end{frame}
 
 \begin{frame}
   \frametitle{Embedding into Haskell - unbound variables}
 
-\begin{verbatim}
-
-\end{verbatim}
 \end{frame}
 
 \begin{frame}
